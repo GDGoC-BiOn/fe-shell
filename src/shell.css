@@ -43,6 +43,7 @@ header {
 }
 .search {
   flex: 1;
+  min-width: 0;
   max-width: 420px;
   border: 1px solid var(--line);
   border-radius: 99px;
@@ -155,10 +156,46 @@ footer { border-top: 1px solid var(--line); margin-top: 80px; }
 }
 
 @media (max-width: 960px) {
+  .wrap { padding: 0 24px; }
+  .topnav { gap: 18px; }
+  .search { max-width: 300px; }
   .reco { flex-wrap: wrap; }
   .reco-item { flex: 1 1 50%; }
   .foot-grid { grid-template-columns: 1fr 1fr; }
 }
+
 @media (max-width: 640px) {
+  .wrap { padding: 0 16px; }
+
+  /* Header reflows: logo + actions stay on row 1, search drops to a
+     full-width second row. */
+  .topnav {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px 0;
+    gap: 10px 14px;
+  }
+  .logo { order: 1; font-size: 18px; }
+  .nav-icons { order: 2; gap: 4px; }
+  .search { order: 3; flex: 1 1 100%; max-width: none; }
+  /* Drop the least-important action (favourites) to save room. */
+  .nav-icons bion-button[variant='icon'] { display: none; }
+
+  /* Subnav scrolls horizontally instead of wrapping/overflowing. */
+  .subnav {
+    gap: 20px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .subnav::-webkit-scrollbar { display: none; }
+  .subnav a { white-space: nowrap; }
+
   .reco-item { flex: 1 1 100%; }
+}
+
+@media (max-width: 420px) {
+  /* Very narrow: hide the account badge too, keep logo + cart + search. */
+  .nav-icons bion-account-badge { display: none; }
 }
