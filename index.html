@@ -10,9 +10,135 @@
       href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;450;500&display=swap"
       rel="stylesheet"
     />
+    <!-- Start fetching the remote entries in parallel with the shell bundle so
+         the Module Federation waterfall begins immediately instead of after the
+         host renders. URLs are injected from env at build time (%VITE_*%). -->
+    <link rel="modulepreload" href="%VITE_CATALOG_URL%/remoteEntry.js" crossorigin />
+    <link rel="modulepreload" href="%VITE_CART_URL%/remoteEntry.js" crossorigin />
+    <style>
+      /* Instant loading skeleton — shown before any JS evaluates, so the first
+         paint is the app's shape instead of a blank screen. React replaces
+         #root's contents once the bundle (and remotes) finish loading. */
+      :root {
+        --sk-line: #ebebeb;
+        --sk-base: #f1f1f1;
+        --sk-hi: #e6e6e6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, sans-serif;
+        color: #191919;
+      }
+      @keyframes sk-shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+      .sk {
+        background: linear-gradient(
+          90deg,
+          var(--sk-base) 25%,
+          var(--sk-hi) 37%,
+          var(--sk-base) 63%
+        );
+        background-size: 200% 100%;
+        animation: sk-shimmer 1.4s ease infinite;
+        border-radius: 8px;
+      }
+      .boot-wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 0 32px;
+      }
+      .boot-hd {
+        border-bottom: 1px solid var(--sk-line);
+      }
+      .boot-top {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        height: 66px;
+      }
+      .boot-logo {
+        font-family: "Inter Tight", sans-serif;
+        font-weight: 600;
+        font-size: 19px;
+        letter-spacing: -0.03em;
+      }
+      .boot-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px 28px;
+        margin-top: 40px;
+      }
+      .boot-card .thumb {
+        width: 100%;
+        aspect-ratio: 1/1;
+        border-radius: 10px;
+      }
+      .boot-card .l1 {
+        height: 11px;
+        width: 45%;
+        margin-top: 14px;
+        border-radius: 6px;
+      }
+      .boot-card .l2 {
+        height: 13px;
+        width: 80%;
+        margin-top: 8px;
+        border-radius: 6px;
+      }
+      .boot-card .l3 {
+        height: 13px;
+        width: 35%;
+        margin-top: 10px;
+        border-radius: 6px;
+      }
+      @media (max-width: 960px) {
+        .boot-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 640px) {
+        .boot-wrap {
+          padding: 0 16px;
+        }
+        .boot-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div aria-busy="true" aria-label="Memuat…">
+        <header class="boot-hd">
+          <div class="boot-wrap">
+            <div class="boot-top">
+              <div class="boot-logo">Marqet</div>
+              <div class="sk" style="flex: 1; max-width: 420px; height: 38px; border-radius: 99px"></div>
+              <div class="sk" style="margin-left: auto; width: 70px; height: 28px; border-radius: 99px"></div>
+              <div class="sk" style="width: 112px; height: 38px; border-radius: 99px"></div>
+            </div>
+          </div>
+        </header>
+        <div class="boot-wrap" style="padding-top: 32px">
+          <div class="sk" style="width: 100%; aspect-ratio: 16 / 9; border-radius: 10px"></div>
+          <div class="boot-grid">
+            <div class="boot-card"><div class="sk thumb"></div><div class="sk l1"></div><div class="sk l2"></div><div class="sk l3"></div></div>
+            <div class="boot-card"><div class="sk thumb"></div><div class="sk l1"></div><div class="sk l2"></div><div class="sk l3"></div></div>
+            <div class="boot-card"><div class="sk thumb"></div><div class="sk l1"></div><div class="sk l2"></div><div class="sk l3"></div></div>
+            <div class="boot-card"><div class="sk thumb"></div><div class="sk l1"></div><div class="sk l2"></div><div class="sk l3"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

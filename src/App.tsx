@@ -10,6 +10,26 @@ const Catalog = lazy(() => import('catalog/App'))
 // Stable loader reference so VueSlot mounts the cart once.
 const loadCart = () => import('cart/mount')
 
+// Skeleton shown while the catalog remote is fetched (Suspense fallback), so the
+// catalog area shows its shape instead of a bare "loading" line.
+function CatalogSkeleton() {
+  return (
+    <>
+      <div className="skel skel-hero" />
+      <div className="skel-grid">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div className="skel-card" key={i}>
+            <div className="skel t" />
+            <div className="skel a" />
+            <div className="skel b" />
+            <div className="skel c" />
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 export default function App() {
   const [count, setCount] = useState(0)
   const [query, setQuery] = useState('')
@@ -91,7 +111,7 @@ export default function App() {
           </div>
         </section>
 
-        <Suspense fallback={<div className="loading">Memuat katalog…</div>}>
+        <Suspense fallback={<CatalogSkeleton />}>
           <Catalog onAddToCart={addToCart} query={query} />
         </Suspense>
       </main>

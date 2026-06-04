@@ -119,6 +119,40 @@ header {
   font-size: 14px;
 }
 
+/* ── catalog remote loading skeleton (Suspense fallback) ── */
+@keyframes skel {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skel {
+  background: linear-gradient(90deg, #f1f1f1 25%, #e6e6e6 37%, #f1f1f1 63%);
+  background-size: 200% 100%;
+  animation: skel 1.4s ease infinite;
+  border-radius: 8px;
+}
+.skel-hero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  margin: 32px 0 64px;
+}
+.skel-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px 28px;
+  margin-bottom: 80px;
+}
+.skel-card .t { width: 100%; aspect-ratio: 1 / 1; border-radius: 10px; }
+.skel-card .a { height: 11px; width: 45%; margin-top: 14px; }
+.skel-card .b { height: 13px; width: 80%; margin-top: 8px; }
+.skel-card .c { height: 13px; width: 35%; margin-top: 10px; }
+@media (max-width: 960px) {
+  .skel-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .skel-grid { grid-template-columns: 1fr 1fr; }
+}
+
 /* ── footer ── */
 footer { border-top: 1px solid var(--line); margin-top: 80px; }
 .foot-grid {
