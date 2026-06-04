@@ -24,18 +24,44 @@ each remote's `remoteEntry.js`. UI comes from the published
 [`@bion-mfe-ui`](https://gdgoc-bion.github.io/bion-mfe-ui) component library
 (Lit web components + React/Vue adapters).
 
+### Architecture
+
+> **You are here: `fe-shell`** — the host that ties the other two together.
+
+```mermaid
+flowchart TD
+    user([User / Browser])
+    shell["fe-shell — React host (:3000)<br/>header · footer · search · event-bus bridge"]
+    catalog["fe-catalog — React remote (:3001)<br/>hero · product grid · filters"]
+    cart["fe-cart — Vue remote (:3002)<br/>cart drawer + state"]
+
+    user --> shell
+    shell -->|"lazy import('catalog/App') · direct props"| catalog
+    catalog -.->|"onAddToCart(product) callback"| shell
+    shell ==>|"window event: cart:add-item · cart:open"| cart
+    cart ==>|"window event: cart:count (→ header badge)"| shell
+
+    style shell fill:#eef6ff,stroke:#2563eb,stroke-width:4px
+    style catalog fill:#eefaf0,stroke:#0a8f54,stroke-width:2px
+    style cart fill:#fff4e8,stroke:#b35e0c,stroke-width:2px
 ```
-                         ┌──────────────────────────── fe-shell (host, React) ───────────────────────────┐
-  Browser ──▶ index.html │  header · search · footer                                                      │
-                         │                                                                                │
-                         │   <Catalog/>  ◀─ React.lazy(import('catalog/App'))      props/callbacks (React) │
-                         │      │  onAddToCart(product)                                                    │
-                         │      ▼                                                                          │
-                         │   window CustomEvent bus  ──"cart:add-item"──▶  <div> mount('cart/mount')       │
-                         │      ▲                          "cart:open"──▶       (Vue app)                   │
-                         │      └────────"cart:count"───────────────────────────────┘                     │
-                         └────────────────────────────────────────────────────────────────────────────────┘
-                                    ▲ http://localhost:3001/remoteEntry.js   ▲ http://localhost:3002/remoteEntry.js
+
+**Legend** — **solid** = host loads/consumes a remote (same-framework, direct props) · **dashed** = React callback back to the host · **thick** = cross-framework `window` event bus.
+
+### Add-to-cart flow
+
+```mermaid
+sequenceDiagram
+    actor U as User
+    participant C as fe-catalog (React)
+    participant S as fe-shell (host)
+    participant K as fe-cart (Vue)
+    U->>C: click "+" on a product
+    C->>S: onAddToCart(product) — React prop (direct)
+    S->>K: window "cart:add-item" { product }
+    Note over K: add / increment line, open drawer
+    K-->>S: window "cart:count" { count }
+    Note over S: header badge → "Keranjang (n)"
 ```
 
 ---
