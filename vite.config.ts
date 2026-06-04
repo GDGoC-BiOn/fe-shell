@@ -2,19 +2,6 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { federation } from "@module-federation/vite";
 
-// Shared singletons. react/react-dom dedupe between shell and the React catalog
-// (so the catalog renders as a real React child). lit + bion must be singletons
-// across all three apps — including the Vue cart — or a second
-// `customElements.define('bion-…')` throws. Trailing-slash keys cover subpaths.
-const bion = {
-  lit: { singleton: true },
-  "lit/": { singleton: true },
-  "@bion-mfe-ui/core": { singleton: true },
-  "@bion-mfe-ui/core/": { singleton: true },
-  "@bion-mfe-ui/icons": { singleton: true },
-  "@bion-mfe-ui/tokens": { singleton: true },
-};
-
 export default defineConfig(({ mode }) => {
   // Reads VITE_* from .env files and from the platform's process.env on deploy.
   const env = loadEnv(mode, process.cwd());
@@ -43,26 +30,22 @@ export default defineConfig(({ mode }) => {
             entry: `${cartUrl}/remoteEntry.js`,
           },
         },
+        // Only React is shared — the catalog renders as a real React child of
+        // the shell, so both must use ONE React instance.
+        //
+        // lit + @bion-mfe-ui are intentionally NOT shared: sharing them created
+        // a deep loadShare→prebuild chain of tiny chunks (a ~25-wave request
+        // waterfall, slow on high-latency networks), and it isn't needed for
+        // correctness — @bion-mfe-ui/core@^0.1.2 makes customElements.define
+        // idempotent, so each app bundling its own copy is safe. Bundling them
+        // means far fewer sequential requests on first load.
         shared: {
           react: { singleton: true },
           "react-dom": { singleton: true },
           "react-dom/": { singleton: true },
-          ...bion,
         },
       }),
     ],
-    // Keep esbuild from pre-bundling (and inlining a private copy of)
-    // @bion-mfe-ui/core + lit in dev — let the federation shared scope own them
-    // so the bion-* web components register exactly once.
-    optimizeDeps: {
-      exclude: [
-        "@bion-mfe-ui/react",
-        "@bion-mfe-ui/core",
-        "@bion-mfe-ui/icons",
-        "@bion-mfe-ui/tokens",
-        "lit",
-      ],
-    },
     build: { target: "chrome89" },
   };
 });

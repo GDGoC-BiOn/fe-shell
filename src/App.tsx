@@ -4,11 +4,18 @@ import { VueSlot } from './VueSlot'
 import type { MarqetProduct } from './types'
 import './shell.css'
 
-// React → React: the catalog remote is consumed as a real React component.
-const Catalog = lazy(() => import('catalog/App'))
+// Kick off the remote imports immediately at module-eval time so they load in
+// PARALLEL with the host bootstrap, instead of only after the shell first
+// renders. This takes the "render → then fetch remote" hop off the critical
+// path — the biggest win against the deep first-load request waterfall.
+const catalogModule = import('catalog/App')
+const cartModule = import('cart/mount')
 
-// Stable loader reference so VueSlot mounts the cart once.
-const loadCart = () => import('cart/mount')
+// React → React: the catalog remote is consumed as a real React component.
+const Catalog = lazy(() => catalogModule)
+
+// Stable loader reference so VueSlot reuses the already-started cart import.
+const loadCart = () => cartModule
 
 // Skeleton shown while the catalog remote is fetched (Suspense fallback), so the
 // catalog area shows its shape instead of a bare "loading" line.
