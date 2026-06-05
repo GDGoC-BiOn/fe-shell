@@ -15,7 +15,7 @@ ARG VITE_PUBLIC_URL=https://app.gdgocbion.web.id/
 ARG VITE_CATALOG_URL=https://app.gdgocbion.web.id/fe-catalog
 ARG VITE_CART_URL=https://app.gdgocbion.web.id/fe-cart
 # OTel collector base URL (same-origin /otel via the LB). Empty disables RUM.
-ARG VITE_OTEL_URL=
+ARG VITE_OTEL_URL=https://app.gdgocbion.web.id/otel
 ARG VITE_BUILD_ID=dev
 ENV VITE_PUBLIC_URL=$VITE_PUBLIC_URL \
     VITE_CATALOG_URL=$VITE_CATALOG_URL \
