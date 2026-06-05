@@ -5,12 +5,19 @@ import { VueSlot } from './VueSlot'
 import type { MarqetProduct } from './types'
 import './shell.css'
 
-// Kick off the remote imports immediately at module-eval time so they load in
-// PARALLEL with the host bootstrap, instead of only after the shell first
-// renders. This takes the "render → then fetch remote" hop off the critical
-// path — the biggest win against the deep first-load request waterfall.
-const catalogModule = import('catalog/App')
-const cartModule = import('cart/mount')
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Remote timed out after ${ms}ms`)), ms),
+    ),
+  ])
+}
+
+const REMOTE_TIMEOUT_MS = 5_000
+
+const catalogModule = withTimeout(import('catalog/App'), REMOTE_TIMEOUT_MS)
+const cartModule = withTimeout(import('cart/mount'), REMOTE_TIMEOUT_MS)
 
 // React → React: the catalog remote is consumed as a real React component.
 const Catalog = lazy(() => catalogModule)
