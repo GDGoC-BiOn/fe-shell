@@ -1,6 +1,11 @@
 import { Component, type ReactNode } from 'react'
 
-type Props = { fallback: ReactNode; children: ReactNode }
+type Props = {
+  fallback: ReactNode
+  children: ReactNode
+  // Notified when a render error is caught (e.g. to report it to telemetry).
+  onError?: (error: unknown) => void
+}
 type State = { hasError: boolean }
 
 // Catches render-time errors from a remote (e.g. its remoteEntry.js failing to
@@ -15,6 +20,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: unknown) {
     console.error('A remote failed to render:', error)
+    this.props.onError?.(error)
   }
 
   render() {

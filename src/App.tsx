@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import { AccountBadge, Button } from '@bion-mfe-ui/react'
 import { ErrorBoundary } from './ErrorBoundary'
 import { VueSlot } from './VueSlot'
+import { traceRemoteLoad, recordRemoteError } from './telemetry'
 import type { MarqetProduct } from './types'
 import './shell.css'
 
@@ -16,8 +17,14 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 
 const REMOTE_TIMEOUT_MS = 5_000
 
-const catalogModule = withTimeout(import('catalog/App'), REMOTE_TIMEOUT_MS)
-const cartModule = withTimeout(import('cart/mount'), REMOTE_TIMEOUT_MS)
+const catalogModule = withTimeout(
+  traceRemoteLoad('catalog', () => import('catalog/App')),
+  REMOTE_TIMEOUT_MS,
+)
+const cartModule = withTimeout(
+  traceRemoteLoad('cart', () => import('cart/mount')),
+  REMOTE_TIMEOUT_MS,
+)
 
 // React → React: the catalog remote is consumed as a real React component.
 const Catalog = lazy(() => catalogModule)
@@ -143,7 +150,10 @@ export default function App() {
           </div>
         </section>
 
-        <ErrorBoundary fallback={<CatalogError />}>
+        <ErrorBoundary
+          fallback={<CatalogError />}
+          onError={(err) => recordRemoteError('catalog', err)}
+        >
           <Suspense fallback={<CatalogSkeleton />}>
             <Catalog onAddToCart={addToCart} query={query} />
           </Suspense>

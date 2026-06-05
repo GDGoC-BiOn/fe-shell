@@ -8,12 +8,20 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-ARG VITE_PUBLIC_URL=https://app.example.com/
-ARG VITE_CATALOG_URL=https://app.example.com/fe-catalog
-ARG VITE_CART_URL=https://app.example.com/fe-cart
+# Real production defaults: the GitHub "deploy from repository" trigger builds
+# this Dockerfile directly WITHOUT --build-arg, so these defaults are what gets
+# baked. (cloudbuild.yaml still overrides them via --build-arg when used.)
+ARG VITE_PUBLIC_URL=https://app.gdgocbion.web.id/
+ARG VITE_CATALOG_URL=https://app.gdgocbion.web.id/fe-catalog
+ARG VITE_CART_URL=https://app.gdgocbion.web.id/fe-cart
+# OTel collector base URL (same-origin /otel via the LB). Empty disables RUM.
+ARG VITE_OTEL_URL=
+ARG VITE_BUILD_ID=dev
 ENV VITE_PUBLIC_URL=$VITE_PUBLIC_URL \
     VITE_CATALOG_URL=$VITE_CATALOG_URL \
-    VITE_CART_URL=$VITE_CART_URL
+    VITE_CART_URL=$VITE_CART_URL \
+    VITE_OTEL_URL=$VITE_OTEL_URL \
+    VITE_BUILD_ID=$VITE_BUILD_ID
 
 RUN pnpm build
 
