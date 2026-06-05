@@ -1,21 +1,21 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
-import { AccountBadge, Button } from '@bion-mfe-ui/react'
-import { VueSlot } from './VueSlot'
-import type { MarqetProduct } from './types'
-import './shell.css'
+import { lazy, Suspense, useEffect, useState } from "react";
+import { AccountBadge, Button } from "@bion-mfe-ui/react";
+import { VueSlot } from "./VueSlot";
+import type { MarqetProduct } from "./types";
+import "./shell.css";
 
 // Kick off the remote imports immediately at module-eval time so they load in
 // PARALLEL with the host bootstrap, instead of only after the shell first
 // renders. This takes the "render → then fetch remote" hop off the critical
 // path — the biggest win against the deep first-load request waterfall.
-const catalogModule = import('catalog/App')
-const cartModule = import('cart/mount')
+// const catalogModule = import('catalog/App')
+// const cartModule = import('cart/mount')
 
 // React → React: the catalog remote is consumed as a real React component.
-const Catalog = lazy(() => catalogModule)
+// const Catalog = lazy(() => catalogModule)
 
 // Stable loader reference so VueSlot reuses the already-started cart import.
-const loadCart = () => cartModule
+// const loadCart = () => cartModule
 
 // Skeleton shown while the catalog remote is fetched (Suspense fallback), so the
 // catalog area shows its shape instead of a bare "loading" line.
@@ -34,23 +34,26 @@ function CatalogSkeleton() {
         ))}
       </div>
     </>
-  )
+  );
 }
 
 export default function App() {
-  const [count, setCount] = useState(0)
-  const [query, setQuery] = useState('')
+  const [count, setCount] = useState(0);
+  const [query, setQuery] = useState("");
 
   // React → Vue: forward the catalog's callback to the cart over the bus.
   const addToCart = (p: MarqetProduct) =>
-    window.dispatchEvent(new CustomEvent('cart:add-item', { detail: { product: p } }))
+    window.dispatchEvent(
+      new CustomEvent("cart:add-item", { detail: { product: p } }),
+    );
 
   // Vue → React: the cart reports its item count; the shell owns the badge.
   useEffect(() => {
-    const onCount = (e: WindowEventMap['cart:count']) => setCount(e.detail.count)
-    window.addEventListener('cart:count', onCount)
-    return () => window.removeEventListener('cart:count', onCount)
-  }, [])
+    const onCount = (e: WindowEventMap["cart:count"]) =>
+      setCount(e.detail.count);
+    window.addEventListener("cart:count", onCount);
+    return () => window.removeEventListener("cart:count", onCount);
+  }, []);
 
   return (
     <>
@@ -70,9 +73,11 @@ export default function App() {
               <Button
                 variant="outline"
                 icon="cart"
-                onClick={() => window.dispatchEvent(new CustomEvent('cart:open'))}
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent("cart:open"))
+                }
               >
-                Keranjang{count > 0 ? ` (${count})` : ''}
+                Keranjang{count > 0 ? ` (${count})` : ""}
               </Button>
             </div>
           </div>
@@ -118,9 +123,9 @@ export default function App() {
           </div>
         </section>
 
-        <Suspense fallback={<CatalogSkeleton />}>
+        {/* <Suspense fallback={<CatalogSkeleton />}>
           <Catalog onAddToCart={addToCart} query={query} />
-        </Suspense>
+        </Suspense> */}
       </main>
 
       <footer>
@@ -128,7 +133,10 @@ export default function App() {
           <div className="foot-grid">
             <div>
               <div className="logo">Marqet</div>
-              <p>Marketplace perangkat pilihan. Dirakit di Bandung, dikirim ke mana pun.</p>
+              <p>
+                Marketplace perangkat pilihan. Dirakit di Bandung, dikirim ke
+                mana pun.
+              </p>
             </div>
             <div className="foot-col">
               <h4>Belanja</h4>
@@ -160,7 +168,7 @@ export default function App() {
       </footer>
 
       {/* Vue cart remote — mounted into a DOM node, talks only over the bus. */}
-      <VueSlot loader={loadCart} />
+      {/* <VueSlot loader={loadCart} /> */}
     </>
-  )
+  );
 }

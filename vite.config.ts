@@ -16,35 +16,26 @@ export default defineConfig(({ mode }) => {
     preview: { port, strictPort: true, cors: true },
     plugins: [
       react(),
-      federation({
-        name: "shell",
-        remotes: {
-          catalog: {
-            type: "module",
-            name: "catalog",
-            entry: `${catalogUrl}/remoteEntry.js`,
-          },
-          cart: {
-            type: "module",
-            name: "cart",
-            entry: `${cartUrl}/remoteEntry.js`,
-          },
-        },
-        // Only React is shared — the catalog renders as a real React child of
-        // the shell, so both must use ONE React instance.
-        //
-        // lit + @bion-mfe-ui are intentionally NOT shared: sharing them created
-        // a deep loadShare→prebuild chain of tiny chunks (a ~25-wave request
-        // waterfall, slow on high-latency networks), and it isn't needed for
-        // correctness — @bion-mfe-ui/core@^0.1.2 makes customElements.define
-        // idempotent, so each app bundling its own copy is safe. Bundling them
-        // means far fewer sequential requests on first load.
-        shared: {
-          react: { singleton: true },
-          "react-dom": { singleton: true },
-          "react-dom/": { singleton: true },
-        },
-      }),
+      // federation({
+      //   name: "shell",
+      //   remotes: {
+      //     catalog: {
+      //       type: "module",
+      //       name: "catalog",
+      //       entry: `${catalogUrl}/remoteEntry.js`,
+      //     },
+      //     cart: {
+      //       type: "module",
+      //       name: "cart",
+      //       entry: `${cartUrl}/remoteEntry.js`,
+      //     },
+      //   },
+      //   shared: {
+      //     react: { singleton: true },
+      //     "react-dom": { singleton: true },
+      //     "react-dom/": { singleton: true },
+      //   },
+      // }),
     ],
     build: { target: "chrome89" },
   };

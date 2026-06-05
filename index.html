@@ -12,9 +12,12 @@
     />
     <!-- Start fetching the remote entries in parallel with the shell bundle so
          the Module Federation waterfall begins immediately instead of after the
-         host renders. URLs are injected from env at build time (%VITE_*%). -->
-    <link rel="modulepreload" href="%VITE_CATALOG_URL%/remoteEntry.js" crossorigin />
-    <link rel="modulepreload" href="%VITE_CART_URL%/remoteEntry.js" crossorigin />
+         host renders. URLs are injected from env at build time (%VITE_*%).
+         DEMO: these are plain HTML and fire regardless of the federation config,
+         so they stay commented in the starter. Uncomment the catalog line in
+         Act 2 and the cart line in Act 3 (needs .env with VITE_*_URL). -->
+    <!-- <link rel="modulepreload" href="%VITE_CATALOG_URL%/remoteEntry.js" crossorigin /> -->
+    <!-- <link rel="modulepreload" href="%VITE_CART_URL%/remoteEntry.js" crossorigin /> -->
     <style>
       /* Instant loading skeleton — shown before any JS evaluates, so the first
          paint is the app's shape instead of a blank screen. React replaces
