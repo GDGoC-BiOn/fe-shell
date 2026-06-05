@@ -2,15 +2,15 @@ substitutions:
   _REGION: asia-southeast2
   _SERVICE: fe-shell
   _AR_REPO: mfe
-  _PUBLIC_URL: https://app.example.com/
-  _CATALOG_URL: https://app.example.com/fe-catalog
-  _CART_URL: https://app.example.com/fe-cart
+  _PUBLIC_URL: https://app.gdgocbion.web.id/
+  _CATALOG_URL: https://app.gdgocbion.web.id/fe-catalog
+  _CART_URL: https://app.gdgocbion.web.id/fe-cart
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
 images:
-  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$SHORT_SHA
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID
   - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:latest
 
 steps:
@@ -21,7 +21,7 @@ steps:
       - --build-arg=VITE_PUBLIC_URL=${_PUBLIC_URL}
       - --build-arg=VITE_CATALOG_URL=${_CATALOG_URL}
       - --build-arg=VITE_CART_URL=${_CART_URL}
-      - -t=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$SHORT_SHA
+      - -t=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID
       - -t=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:latest
       - .
 
@@ -33,13 +33,12 @@ steps:
       - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}
 
   - id: deploy
-    name: gcr.io/google-cloud-sdk/cloud-sdk
-    entrypoint: gcloud
+    name: gcr.io/cloud-builders/gcloud
     args:
       - run
       - deploy
       - ${_SERVICE}
-      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$SHORT_SHA
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO}/${_SERVICE}:$BUILD_ID
       - --region=${_REGION}
       - --platform=managed
       - --port=8080
