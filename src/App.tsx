@@ -38,22 +38,25 @@ function CatalogSkeleton() {
 }
 
 export default function App() {
-  const [count, setCount] = useState(0);
   const [query, setQuery] = useState("");
 
+  // STARTER: inter-MFE communication commented out — this branch is UI only.
+  // Uncomment everything below to wire it back (the cart button + badge too).
+  // const [count, setCount] = useState(0);
+
   // React → Vue: forward the catalog's callback to the cart over the bus.
-  const addToCart = (p: MarqetProduct) =>
-    window.dispatchEvent(
-      new CustomEvent("cart:add-item", { detail: { product: p } }),
-    );
+  // const addToCart = (p: MarqetProduct) =>
+  //   window.dispatchEvent(
+  //     new CustomEvent("cart:add-item", { detail: { product: p } }),
+  //   );
 
   // Vue → React: the cart reports its item count; the shell owns the badge.
-  useEffect(() => {
-    const onCount = (e: WindowEventMap["cart:count"]) =>
-      setCount(e.detail.count);
-    window.addEventListener("cart:count", onCount);
-    return () => window.removeEventListener("cart:count", onCount);
-  }, []);
+  // useEffect(() => {
+  //   const onCount = (e: WindowEventMap["cart:count"]) =>
+  //     setCount(e.detail.count);
+  //   window.addEventListener("cart:count", onCount);
+  //   return () => window.removeEventListener("cart:count", onCount);
+  // }, []);
 
   return (
     <>
@@ -73,11 +76,13 @@ export default function App() {
               <Button
                 variant="outline"
                 icon="cart"
-                onClick={() =>
-                  window.dispatchEvent(new CustomEvent("cart:open"))
-                }
+                // STARTER: uncomment to dispatch "cart:open" (React → Vue).
+                // onClick={() =>
+                //   window.dispatchEvent(new CustomEvent("cart:open"))
+                // }
               >
-                Keranjang{count > 0 ? ` (${count})` : ""}
+                {/* STARTER: live badge → Keranjang{count > 0 ? ` (${count})` : ""} */}
+                Keranjang
               </Button>
             </div>
           </div>
