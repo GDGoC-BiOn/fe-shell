@@ -146,6 +146,20 @@ header {
 .skel-card .a { height: 11px; width: 45%; margin-top: 14px; }
 .skel-card .b { height: 13px; width: 80%; margin-top: 8px; }
 .skel-card .c { height: 13px; width: 35%; margin-top: 10px; }
+
+.remote-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 24px;
+  margin-bottom: 80px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--mute);
+  text-align: center;
+}
+
 @media (max-width: 960px) {
   .skel-grid { grid-template-columns: repeat(2, 1fr); }
 }

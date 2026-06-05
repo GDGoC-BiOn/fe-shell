@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { AccountBadge, Button } from '@bion-mfe-ui/react'
+import { ErrorBoundary } from './ErrorBoundary'
 import { VueSlot } from './VueSlot'
 import type { MarqetProduct } from './types'
 import './shell.css'
@@ -37,9 +38,25 @@ function CatalogSkeleton() {
   )
 }
 
+// Shown when the catalog remote fails to load (e.g. its service is down), so the
+// rest of the shell keeps working instead of crashing to a blank page.
+function CatalogError() {
+  return (
+    <div className="remote-error">
+      <p>Katalog sedang tidak tersedia.</p>
+      <Button variant="outline" onClick={() => window.location.reload()}>
+        Coba lagi
+      </Button>
+    </div>
+  )
+}
+
 export default function App() {
   const [count, setCount] = useState(0)
   const [query, setQuery] = useState('')
+  // Set when the cart remote fails to load, so the header can degrade instead of
+  // offering a cart button that opens nothing.
+  const [cartFailed, setCartFailed] = useState(false)
 
   // React → Vue: forward the catalog's callback to the cart over the bus.
   const addToCart = (p: MarqetProduct) =>
@@ -70,9 +87,10 @@ export default function App() {
               <Button
                 variant="outline"
                 icon="cart"
+                disabled={cartFailed}
                 onClick={() => window.dispatchEvent(new CustomEvent('cart:open'))}
               >
-                Keranjang{count > 0 ? ` (${count})` : ''}
+                {cartFailed ? 'Keranjang tak tersedia' : `Keranjang${count > 0 ? ` (${count})` : ''}`}
               </Button>
             </div>
           </div>
@@ -118,9 +136,11 @@ export default function App() {
           </div>
         </section>
 
-        <Suspense fallback={<CatalogSkeleton />}>
-          <Catalog onAddToCart={addToCart} query={query} />
-        </Suspense>
+        <ErrorBoundary fallback={<CatalogError />}>
+          <Suspense fallback={<CatalogSkeleton />}>
+            <Catalog onAddToCart={addToCart} query={query} />
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       <footer>
@@ -160,7 +180,7 @@ export default function App() {
       </footer>
 
       {/* Vue cart remote — mounted into a DOM node, talks only over the bus. */}
-      <VueSlot loader={loadCart} />
+      <VueSlot loader={loadCart} onError={() => setCartFailed(true)} />
     </>
   )
 }
